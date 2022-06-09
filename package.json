@@ -1,0 +1,27 @@
+{
+  "name": "cms-for-your-employees",
+  "version": "1.0.0",
+  "description": "CMS for your business",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brischster/CMS-for-Your-Employees.git"
+  },
+  "keywords": [
+    "CMS"
+  ],
+  "author": "Ryan Brisch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brischster/CMS-for-Your-Employees/issues"
+  },
+  "homepage": "https://github.com/brischster/CMS-for-Your-Employees#readme",
+  "dependencies": {
+    "inquirer": "^8.2.4",
+    "mysql2": "^2.3.3"
+  }
+}
