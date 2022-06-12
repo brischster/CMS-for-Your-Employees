@@ -146,21 +146,10 @@ const addEmployee = async () => {
     const rolesList = await query(
       "SELECT id AS value, title AS name FROM job_role"
     );
-    //const roles = await query("SELECT * FROM job_role");
-    // const listOfRoles = roles.map((job_role) => ({
-    //   name: job_role.title,
-    //   value: job_role.id,
-    // }));
+
     const managerList = await query(
       "SELECT id AS value, last_name AS name FROM employee"
     );
-
-    // const mgr = await query("SELECT * FROM employee");
-
-    // let listOfMgr = mgr.map((employee) => ({
-    //   name: `${employee.first_name} ${employee.last_name}`,
-    //   value: employee.id,
-    // }));
 
     const newEmpQ = await inquirer.prompt([
       {
@@ -262,28 +251,5 @@ const addRoleQuestions = [
     name: "newSalary",
   },
 ];
-
-// const addEmployeeQuestions = [
-//   {
-//     type: "input",
-//     message: "What is the new employee's first name?",
-//     name: "newFirstName",
-//   },
-//   {
-//     type: "input",
-//     message: "What is the new employee's last name?",
-//     name: "newLastName",
-//   },
-//   {
-//     type: "input",
-//     message: "What is the role ID for the new employee?",
-//     name: "newRoleID",
-//   },
-//   {
-//     type: "input",
-//     message: "What is the new employee's manager's id?",
-//     name: "newManagerID",
-//   },
-// ];
 
 mainMenu();
