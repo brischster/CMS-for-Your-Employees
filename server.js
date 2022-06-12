@@ -49,10 +49,10 @@ const mainMenu = async () => {
       addRole();
       break;
     case "Add an Employee":
-      //addEmployee();
+      addEmployee();
       break;
     case "Update an Employee Role":
-      //updateEmployeeRole();
+      updateEmployeeRole();
       break;
     default:
       process.exit(0);
@@ -107,24 +107,16 @@ const addRole = async () => {
       value: department.id,
     }));
 
-    const newRoleQ = await inquirer.prompt([
-      {
-        type: "input",
-        message: "What is the title of the role you would like to add?",
-        name: "newRole",
-      },
-      {
-        type: "input",
-        message: "What is the salary of the new role?",
-        name: "newSalary",
-      },
-      {
-        type: "list",
-        message: "What is the Department ID for the new role?",
-        choices: listOfDepts,
-        name: "newDeptNum",
-      },
-    ]);
+    const deptChoice = {
+      type: "list",
+      message: "What is the Department ID for the new role?",
+      choices: listOfDepts,
+      name: "newDeptNum",
+    };
+
+    addRoleQuestions.push(deptChoice);
+
+    const newRoleQ = await inquirer.prompt(addRoleQuestions);
     // try {
     // const depts = await query('SELECT * FROM department');
     // let listOfDepts = depts.map((department) => ({
@@ -137,8 +129,7 @@ const addRole = async () => {
     //     value: department.id,
     //   }));
     // };
-    const data = await (`INSERT INTO job_role SET ?`,
-    {
+    const data = await query(`INSERT INTO job_role SET ?`, {
       title: newRoleQ.newRole,
       salary: newRoleQ.newSalary,
       id: newRoleQ.dept_name,
@@ -147,6 +138,97 @@ const addRole = async () => {
     mainMenu();
   } catch (error) {
     console.error(error);
+  }
+};
+
+const addEmployee = async () => {
+  try {
+    const roles = await query("SELECT * FROM job_role");
+    const listOfRoles = roles.map((job_role) => ({
+      name: job_role.title,
+      value: job_role.id,
+    }));
+
+    const mgr = await query("SELECT * FROM employee");
+
+    let listOfMgr;
+
+    const newEmpQ = await inquirer.prompt([
+      {
+        type: "input",
+        message: "What is the new employee's first name?",
+        name: "newFirstName",
+      },
+      {
+        type: "input",
+        message: "What is the new employee's last name?",
+        name: "newLastName",
+      },
+      {
+        type: "list",
+        message: "What is the role ID for the new employee?",
+        choices: listOfRoles,
+        name: "newRoleID",
+      },
+      {
+        type: "input",
+        message: "What is the new employee's manager's id?",
+        name: "newManagerID",
+      },
+    ]);
+
+    const data = await query(`INSERT INTO employee SET ?`, {
+      first_name: newEmpQ.newFirstName,
+      last_name: newEmpQ.newLastName,
+      role_id: newEmpQ.newRoleID,
+    });
+    console.log(
+      `${newEmpQ.newFirstName} ${newEmpQ.newLastName} has been added to the database.`
+    );
+    mainMenu();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const updateEmployeeRole = async () => {
+  try {
+    const roleList = await query(
+      "SELECT id AS value, title AS name FROM job_role"
+    );
+    const empList = await query(
+      "SELECT id AS value, last_name AS name FROM employee"
+    );
+
+    const updateRoleQuestions = [
+      {
+        type: "list",
+        message: "Select employee to update",
+        name: "id",
+        choices: empList,
+      },
+      {
+        type: "list",
+        message: "What is the new role?",
+        name: "role_id",
+        choices: roleList,
+      },
+    ];
+
+    const { id, role_id } = await inquirer.prompt(updateRoleQuestions);
+    const data = await db
+      .promise()
+      .query("UPDATE employee SET role_id = ? WHERE id = ?", [
+        role_id,
+        id,
+        // const data = await query("UPDATE employee SET role_id = ? WHERE id = ?", [
+        // role_id,
+        // id,
+      ]);
+    console.log(`Updated employee`);
+    mainMenu();
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -174,47 +256,40 @@ const addDeptQuestion = [
 //     value: department.id,
 //   }));
 
-// let listOfDepts;
-// const addRoleQuestions = [
-//   {
-//     type: "input",
-//     message: "What is the title of the role you would like to add?",
-//     name: "newRole",
-//   },
-//   {
-//     type: "input",
-//     message: "What is the salary of the new role?",
-//     name: "newSalary",
-//   },
-//   {
-//     type: "list",
-//     message: "What is the Department ID for the new role?",
-//     choices: listOfDepts,
-//     name: "newDeptNum",
-//   },
-// ];
-
-const addEmployeeQuestions = [
+const addRoleQuestions = [
   {
     type: "input",
-    message: "What is the new employee's first name?",
-    name: "newFirstName",
+    message: "What is the title of the role you would like to add?",
+    name: "newRole",
   },
   {
     type: "input",
-    message: "What is the new employee's last name?",
-    name: "newLastName",
-  },
-  {
-    type: "input",
-    message: "What is the role ID for the new employee?",
-    name: "newRoleID",
-  },
-  {
-    type: "input",
-    message: "What is the new employee's manager's id?",
-    name: "newManagerID",
+    message: "What is the salary of the new role?",
+    name: "newSalary",
   },
 ];
+
+// const addEmployeeQuestions = [
+//   {
+//     type: "input",
+//     message: "What is the new employee's first name?",
+//     name: "newFirstName",
+//   },
+//   {
+//     type: "input",
+//     message: "What is the new employee's last name?",
+//     name: "newLastName",
+//   },
+//   {
+//     type: "input",
+//     message: "What is the role ID for the new employee?",
+//     name: "newRoleID",
+//   },
+//   {
+//     type: "input",
+//     message: "What is the new employee's manager's id?",
+//     name: "newManagerID",
+//   },
+// ];
 
 mainMenu();
