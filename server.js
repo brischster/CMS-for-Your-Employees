@@ -143,15 +143,24 @@ const addRole = async () => {
 
 const addEmployee = async () => {
   try {
-    const roles = await query("SELECT * FROM job_role");
-    const listOfRoles = roles.map((job_role) => ({
-      name: job_role.title,
-      value: job_role.id,
-    }));
+    const rolesList = await query(
+      "SELECT id AS value, title AS name FROM job_role"
+    );
+    //const roles = await query("SELECT * FROM job_role");
+    // const listOfRoles = roles.map((job_role) => ({
+    //   name: job_role.title,
+    //   value: job_role.id,
+    // }));
+    const managerList = await query(
+      "SELECT id AS value, last_name AS name FROM employee"
+    );
 
-    const mgr = await query("SELECT * FROM employee");
+    // const mgr = await query("SELECT * FROM employee");
 
-    let listOfMgr;
+    // let listOfMgr = mgr.map((employee) => ({
+    //   name: `${employee.first_name} ${employee.last_name}`,
+    //   value: employee.id,
+    // }));
 
     const newEmpQ = await inquirer.prompt([
       {
@@ -167,12 +176,13 @@ const addEmployee = async () => {
       {
         type: "list",
         message: "What is the role ID for the new employee?",
-        choices: listOfRoles,
+        choices: rolesList,
         name: "newRoleID",
       },
       {
-        type: "input",
+        type: "list",
         message: "What is the new employee's manager's id?",
+        choices: managerList,
         name: "newManagerID",
       },
     ]);
@@ -239,22 +249,6 @@ const addDeptQuestion = [
     name: "newDept",
   },
 ];
-
-// Create list of depts for adding a role questions.
-// let listForRoleQuestions = async () => {
-// const depts = await query("SELECT * FROM department");
-// let listOfDepts = depts.map((department) => ({
-//   name: department.dept_name,
-// }));
-// };
-//let listOfDepts;
-
-// const listForRoleQuestions = async () => {
-//   const depts = await query("SELECT * FROM department");
-//   let listOfDepts = depts.map((department) => ({
-//     name: department.dept_name,
-//     value: department.id,
-//   }));
 
 const addRoleQuestions = [
   {
